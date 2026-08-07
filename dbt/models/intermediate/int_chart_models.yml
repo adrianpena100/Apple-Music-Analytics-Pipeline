@@ -1,0 +1,63 @@
+version: 2
+
+models:
+  - name: int_chart_snapshots
+    description: >
+      One row per Apple Music chart snapshot, including the timestamp of the
+      immediately preceding snapshot.
+
+    columns:
+      - name: country
+        tests:
+          - not_null
+
+      - name: chart_type
+        tests:
+          - not_null
+
+      - name: feed_updated_at
+        tests:
+          - not_null
+
+      - name: snapshot_number
+        tests:
+          - not_null
+
+      - name: chart_size
+        tests:
+          - not_null
+
+  - name: int_chart_rank_history
+    description: >
+      Track-level chart events comparing each Apple Music snapshot with the
+      immediately preceding snapshot. Includes appearances, rank movement,
+      re-entries, and dropped tracks.
+
+    columns:
+      - name: chart_history_key
+        description: "Unique identifier for one track event in one chart snapshot."
+        tests:
+          - not_null
+          - unique
+
+      - name: apple_track_id
+        tests:
+          - not_null
+
+      - name: feed_updated_at
+        tests:
+          - not_null
+
+      - name: movement_status
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - baseline
+                  - first_observed
+                  - re_entry
+                  - moved_up
+                  - moved_down
+                  - unchanged
+                  - dropped

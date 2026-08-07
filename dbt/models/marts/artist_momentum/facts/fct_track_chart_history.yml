@@ -1,0 +1,92 @@
+version: 2
+
+models:
+  - name: fct_track_chart_history
+    description: >
+      Analytics-ready track chart history. One row represents one track event
+      for one Apple Music chart snapshot. Events include chart appearances,
+      rank movement, re-entries, and drops.
+
+    columns:
+      - name: chart_history_key
+        description: >
+          Unique identifier for one track event in one country, chart type,
+          and snapshot.
+        tests:
+          - not_null
+          - unique
+
+      - name: apple_track_id
+        description: "Apple Music track identifier."
+        tests:
+          - not_null
+
+      - name: snapshot_number
+        description: >
+          Sequential number assigned to each chart snapshot within a country
+          and chart type.
+        tests:
+          - not_null
+
+      - name: snapshot_date
+        description: "Calendar date of the Apple Music chart snapshot."
+        tests:
+          - not_null
+
+      - name: feed_updated_at
+        description: "Timestamp supplied by the Apple Music RSS chart feed."
+        tests:
+          - not_null
+
+      - name: movement_status
+        description: >
+          Classification of the track's activity compared with the immediately
+          preceding chart snapshot.
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - baseline
+                  - first_observed
+                  - re_entry
+                  - moved_up
+                  - moved_down
+                  - unchanged
+                  - dropped
+
+      - name: is_charting_in_snapshot
+        description: >
+          True when the track appears in the snapshot and false when the row
+          represents a dropped event.
+        tests:
+          - not_null
+
+      - name: is_latest_snapshot
+        description: >
+          True when the event belongs to the most recently collected snapshot.
+        tests:
+          - not_null
+
+      - name: is_currently_charting
+        description: >
+          True when the track is present in the most recently collected chart.
+        tests:
+          - not_null
+
+      - name: best_rank_to_date
+        description: >
+          Best chart rank the track has achieved up to and including this
+          snapshot.
+
+      - name: chart_appearances_to_date
+        description: >
+          Number of collected chart snapshots in which the track has appeared
+          up to and including this snapshot.
+        tests:
+          - not_null
+
+      - name: days_since_release
+        description: >
+          Number of days between the track's release date and the chart
+          snapshot. Null when the release date is unavailable or invalid.

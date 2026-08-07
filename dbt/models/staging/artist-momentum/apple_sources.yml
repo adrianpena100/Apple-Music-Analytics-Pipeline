@@ -1,0 +1,29 @@
+version: 2
+
+sources:
+  - name: apple_music
+    database: music-analytics-500503
+    schema: artist_momentum_raw
+    description: "Raw Apple Music chart data loaded from Apple RSS feeds."
+    tables:
+      - name: raw_apple_chart_entries
+        description: "Raw normalized Apple Music chart entries. One row per chart rank per ingestion."
+        columns:
+          - name: rank
+            description: "Chart rank from the Apple Music feed."
+          - name: artist_name
+            description: "Artist name from Apple Music."
+          - name: track_name
+            description: "Track name from Apple Music."
+          - name: apple_track_id
+            description: "Apple Music track ID."
+          - name: apple_artist_id
+            description: "Apple Music artist ID."
+          - name: primary_genre
+            description: "Primary non-generic genre from Apple Music."
+          - name: ingested_at
+            description: "Timestamp when the Python ingestion script processed the record."
+          - name: feed_updated
+            description: "Timestamp from the Apple RSS feed."
+          - name: source_file
+            description: "Local raw file that produced the normalized record."

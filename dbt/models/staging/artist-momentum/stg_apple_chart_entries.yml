@@ -1,0 +1,41 @@
+version: 2
+
+models:
+  - name: stg_apple_chart_entries
+    description: "Cleaned Apple Music chart entries. One row per track per chart snapshot."
+
+    columns:
+      - name: chart_rank
+        description: "Track's rank on the Apple Music chart for this snapshot."
+        tests:
+          - not_null
+
+      - name: apple_track_id
+        description: "Apple Music track identifier."
+        tests:
+          - not_null
+
+      - name: track_name
+        description: "Track name from Apple Music."
+        tests:
+          - not_null
+
+      - name: artist_name
+        description: "Artist name from Apple Music."
+        tests:
+          - not_null
+
+      - name: country
+        description: "Apple Music storefront country code."
+        tests:
+          - not_null
+
+      - name: chart_type
+        description: "Type of Apple Music chart."
+        tests:
+          - not_null
+
+      - name: ingested_at
+        description: "Timestamp when this chart entry was ingested."
+        tests:
+          - not_null

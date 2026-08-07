@@ -1,0 +1,125 @@
+version: 2
+
+models:
+  - name: mart_current_track_momentum
+    description: >
+      Current Apple Music Top 50 chart enriched with historical rank movement
+      and track momentum information. One row per currently charting track.
+
+    columns:
+      - name: chart_history_key
+        description: "Unique identifier for the track's latest chart event."
+        tests:
+          - not_null
+          - unique
+
+      - name: apple_track_id
+        description: "Apple Music track identifier."
+        tests:
+          - not_null
+          - unique
+
+      - name: current_rank
+        description: "Track rank in the latest collected chart snapshot."
+        tests:
+          - not_null
+
+      - name: movement_status
+        description: >
+          Track status compared with the immediately preceding chart snapshot.
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - baseline
+                  - first_observed
+                  - re_entry
+                  - moved_up
+                  - moved_down
+                  - unchanged
+
+      - name: movement_label
+        description: "Human-readable chart movement classification."
+        tests:
+          - not_null
+
+      - name: best_rank_to_date
+        description: "Best rank observed for the track through the latest snapshot."
+        tests:
+          - not_null
+
+      - name: chart_appearances_to_date
+        description: >
+          Number of collected snapshots in which the track has appeared.
+        tests:
+          - not_null
+
+
+  - name: mart_chart_snapshot_summary
+    description: >
+      Snapshot-level summary of Apple Music chart activity. One row per
+      country, chart type, and chart snapshot.
+
+    columns:
+      - name: snapshot_key
+        description: "Unique identifier for one chart snapshot."
+        tests:
+          - not_null
+          - unique
+
+      - name: snapshot_number
+        description: "Sequential chart snapshot number."
+        tests:
+          - not_null
+
+      - name: snapshot_date
+        description: "Calendar date of the chart snapshot."
+        tests:
+          - not_null
+
+      - name: charting_track_count
+        description: "Number of tracks present in the chart snapshot."
+        tests:
+          - not_null
+
+      - name: first_observed_count
+        description: >
+          Number of tracks appearing for the first time in the collected
+          history after the baseline snapshot.
+        tests:
+          - not_null
+
+      - name: re_entry_count
+        description: >
+          Number of tracks returning after being absent from the immediately
+          preceding snapshot.
+        tests:
+          - not_null
+
+      - name: moved_up_count
+        description: "Number of tracks that improved their chart rank."
+        tests:
+          - not_null
+
+      - name: moved_down_count
+        description: "Number of tracks that declined in chart rank."
+        tests:
+          - not_null
+
+      - name: unchanged_count
+        description: "Number of tracks whose rank remained unchanged."
+        tests:
+          - not_null
+
+      - name: dropped_count
+        description: >
+          Number of tracks present in the preceding snapshot but absent from
+          this snapshot.
+        tests:
+          - not_null
+
+      - name: is_latest_snapshot
+        description: "True when this is the most recently collected snapshot."
+        tests:
+          - not_null
