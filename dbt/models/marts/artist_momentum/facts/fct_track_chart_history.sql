@@ -35,16 +35,24 @@ final as (
         chart_history.chart_type,
 
         chart_history.snapshot_number,
-        date(chart_history.feed_updated_at) as snapshot_date,
-        
+
+        date(
+            chart_history.feed_updated_at,
+            "America/Chicago"
+        ) as snapshot_date,
+
         case
             when chart_history.snapshot_number
                  = latest_snapshots.latest_snapshot_number
                 then 'Latest'
+
             else replace(
                 format_date(
                     '%b %d, %Y',
-                    date(chart_history.feed_updated_at)
+                    date(
+                        chart_history.feed_updated_at,
+                        "America/Chicago"
+                    )
                 ),
                 ' 0',
                 ' '
@@ -59,17 +67,28 @@ final as (
 
         case
             when chart_history.release_date is not null
-                 and chart_history.release_date <= date(chart_history.feed_updated_at)
+                 and chart_history.release_date <= date(
+                     chart_history.feed_updated_at,
+                     "America/Chicago"
+                 )
                 then date_diff(
-                    date(chart_history.feed_updated_at),
+                    date(
+                        chart_history.feed_updated_at,
+                        "America/Chicago"
+                    ),
                     chart_history.release_date,
                     day
                 )
+
             else null
         end as days_since_release,
 
         chart_history.first_observed_at,
-        date(chart_history.first_observed_at) as first_observed_date,
+
+        date(
+            chart_history.first_observed_at,
+            "America/Chicago"
+        ) as first_observed_date,
 
         chart_history.chart_rank,
         chart_history.previous_chart_rank,
@@ -79,18 +98,25 @@ final as (
         case
             when chart_history.movement_status = 'baseline'
                 then 'Baseline'
+
             when chart_history.movement_status = 'first_observed'
                 then 'First observed'
+
             when chart_history.movement_status = 're_entry'
                 then 'Re-entry'
+
             when chart_history.movement_status = 'moved_up'
                 then 'Rising'
+
             when chart_history.movement_status = 'moved_down'
                 then 'Falling'
+
             when chart_history.movement_status = 'unchanged'
                 then 'Unchanged'
+
             when chart_history.movement_status = 'dropped'
                 then 'Dropped'
+
             else chart_history.movement_status
         end as movement_label,
 
@@ -104,10 +130,14 @@ final as (
 
             order by chart_history.snapshot_number
 
-            rows between unbounded preceding and current row
+            rows between
+                unbounded preceding
+                and current row
         ) as best_rank_to_date,
 
-        countif(chart_history.is_charting_in_snapshot) over (
+        countif(
+            chart_history.is_charting_in_snapshot
+        ) over (
             partition by
                 chart_history.apple_track_id,
                 chart_history.country,
@@ -115,7 +145,9 @@ final as (
 
             order by chart_history.snapshot_number
 
-            rows between unbounded preceding and current row
+            rows between
+                unbounded preceding
+                and current row
         ) as chart_appearances_to_date,
 
         chart_history.snapshot_number
