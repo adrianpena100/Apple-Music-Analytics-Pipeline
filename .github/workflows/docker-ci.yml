@@ -1,0 +1,30 @@
+name: Docker CI
+
+on:
+  push:
+    branches:
+      - feature/github-actions
+
+  pull_request:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+jobs:
+  validate-docker:
+    name: Build and validate Docker image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Build Docker image
+        run: docker build -t apple-music-pipeline .
+
+      - name: Validate Dagster definitions
+        run: |
+          docker run --rm \
+            apple-music-pipeline \
+            dg check defs

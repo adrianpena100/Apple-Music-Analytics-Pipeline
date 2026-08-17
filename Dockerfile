@@ -41,13 +41,20 @@ RUN python -m pip install --no-cache-dir --upgrade pip \
 COPY . .
 
 
-# Create a temporary Dagster runtime directory
-# and disable Dagster telemetry for container runs.
+# Generate dbt's manifest inside the container.
+#
+# dbt/target is intentionally not copied from the host,
+# so this image is reproducible from a fresh Git checkout.
+RUN dbt parse \
+    --project-dir /app/dbt \
+    --profiles-dir /app/dbt
+
+
+# Create Dagster runtime directory and disable telemetry
 RUN mkdir -p "$DAGSTER_HOME" \
     && printf "telemetry:\n  enabled: false\n" \
     > "$DAGSTER_HOME/dagster.yaml"
 
 
-# Starting this container means:
-# run the full Apple Music Dagster pipeline once, then exit.
+# Starting the container runs the full pipeline once
 CMD ["dg", "launch", "--job", "__ASSET_JOB"]
