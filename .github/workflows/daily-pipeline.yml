@@ -1,0 +1,52 @@
+name: Daily Apple Music Pipeline
+
+on:
+  # Temporary trigger while developing this feature branch.
+  # This lets us test the complete pipeline before merging to main.
+  push:
+    branches:
+      - feature/daily-pipeline
+
+  # Allows manual runs once this workflow is on the default branch.
+  workflow_dispatch:
+
+  # Once merged to main, GitHub will run this every day
+  # at 2:30 AM Central Time.
+  schedule:
+    - cron: "30 2 * * *"
+      timezone: "America/Chicago"
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  run-pipeline:
+    name: Run Apple Music analytics pipeline
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      # Build BEFORE authentication so temporary Google credentials
+      # can never accidentally become part of the Docker image.
+      - name: Build Docker image
+        run: docker build -t apple-music-pipeline .
+
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v3
+        with:
+          project_id: music-analytics-500503
+          workload_identity_provider: projects/909592598135/locations/global/workloadIdentityPools/github-actions-pool/providers/github-provider
+          service_account: github-actions-pipeline@music-analytics-500503.iam.gserviceaccount.com
+
+      - name: Run Dagster pipeline in Docker
+        run: |
+          docker run --rm \
+            -v "${{ steps.auth.outputs.credentials_file_path }}:/tmp/gcp-credentials.json:ro" \
+            -e GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcp-credentials.json \
+            -e GOOGLE_CLOUD_PROJECT=music-analytics-500503 \
+            apple-music-pipeline
