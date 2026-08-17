@@ -1,0 +1,7 @@
+dagster==1.13.17
+dagster-dg-cli==1.13.17
+dagster-dbt==0.29.17
+dbt-core==1.11.12
+dbt-bigquery==1.11.3
+google-cloud-bigquery==3.42.1
+requests==2.34.2

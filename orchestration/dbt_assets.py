@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 from typing import Any, Mapping
 
@@ -14,19 +15,56 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 DBT_PROJECT_DIR = PROJECT_ROOT / "dbt"
 
-DBT_PROFILES_DIR = Path.home() / ".dbt"
+DBT_PROFILES_DIR = Path(
+    os.getenv(
+        "DBT_PROFILES_DIR",
+        str(Path.home() / ".dbt"),
+    )
+)
+
+# Allow Docker or another environment to explicitly choose
+# which dbt executable Dagster should use.
+#
+# Local Windows development:
+#     Uses dbt Fusion from ~/.local/bin/dbt.exe
+#
+# Docker:
+#     Falls back to "dbt", which will be installed
+#     in the container through requirements.txt.
+DBT_EXECUTABLE_OVERRIDE = os.getenv("DBT_EXECUTABLE")
+
+DBT_FUSION_WINDOWS = (
+    Path.home()
+    / ".local"
+    / "bin"
+    / "dbt.exe"
+)
+
+DBT_FUSION_LINUX = (
+    Path.home()
+    / ".local"
+    / "bin"
+    / "dbt"
+)
+
+
+if DBT_EXECUTABLE_OVERRIDE:
+    DBT_EXECUTABLE = DBT_EXECUTABLE_OVERRIDE
+
+elif DBT_FUSION_WINDOWS.exists():
+    DBT_EXECUTABLE = str(DBT_FUSION_WINDOWS)
+
+elif DBT_FUSION_LINUX.exists():
+    DBT_EXECUTABLE = str(DBT_FUSION_LINUX)
+
+else:
+    DBT_EXECUTABLE = "dbt"
+
 
 DBT_MANIFEST_PATH = (
     DBT_PROJECT_DIR
     / "target"
     / "manifest.json"
-)
-
-DBT_FUSION_EXECUTABLE = (
-    Path.home()
-    / ".local"
-    / "bin"
-    / "dbt.exe"
 )
 
 

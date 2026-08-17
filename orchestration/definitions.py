@@ -11,7 +11,7 @@ from orchestration.dbt_assets import (
     apple_music_dbt_assets,
     DBT_PROJECT_DIR,
     DBT_PROFILES_DIR,
-    DBT_FUSION_EXECUTABLE,
+    DBT_EXECUTABLE,
 )
 
 from orchestration.schedules import (
@@ -33,7 +33,7 @@ defs = dg.Definitions(
         "dbt": DbtCliResource(
             project_dir=DBT_PROJECT_DIR,
             profiles_dir=DBT_PROFILES_DIR,
-            dbt_executable=DBT_FUSION_EXECUTABLE,
+            dbt_executable=DBT_EXECUTABLE,
         ),
     },
 )
