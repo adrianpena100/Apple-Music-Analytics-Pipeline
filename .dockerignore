@@ -33,3 +33,7 @@ data/processed/
 .ruff_cache/
 dbt/logs/
 dbt/dbt_packages/
+
+# Generated dbt artifacts
+# Docker generates its own manifest during the build.
+dbt/target/
