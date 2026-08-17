@@ -1,0 +1,11 @@
+default:
+  target: dev
+
+  outputs:
+    dev:
+      type: bigquery
+      method: oauth
+      project: music-analytics-500503
+      dataset: artist_momentum_dbt
+      threads: 16
+      location: us-south1

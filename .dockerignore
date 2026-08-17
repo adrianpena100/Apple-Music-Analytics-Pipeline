@@ -1,0 +1,35 @@
+# Local Python environment
+.venv/
+
+# Local Dagster state
+.dagster/
+
+# Git metadata
+.git/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+
+# Editor / OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Local environment / secrets
+.env
+.env.*
+*.key
+*.pem
+
+# Local pipeline output
+data/raw/
+data/processed/
+
+# Logs and caches
+*.log
+.pytest_cache/
+.ruff_cache/
+dbt/logs/
+dbt/dbt_packages/
