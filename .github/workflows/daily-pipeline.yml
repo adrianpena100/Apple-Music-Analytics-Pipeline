@@ -1,17 +1,10 @@
 name: Daily Apple Music Pipeline
 
 on:
-  # Temporary trigger while developing this feature branch.
-  # This lets us test the complete pipeline before merging to main.
-  push:
-    branches:
-      - feature/daily-pipeline
-
-  # Allows manual runs once this workflow is on the default branch.
+  # Allows the pipeline to be run manually from GitHub.
   workflow_dispatch:
 
-  # Once merged to main, GitHub will run this every day
-  # at 2:30 AM Central Time.
+  # Run every day at 2:30 AM Central Time.
   schedule:
     - cron: "30 2 * * *"
       timezone: "America/Chicago"
@@ -30,8 +23,8 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v7
 
-      # Build BEFORE authentication so temporary Google credentials
-      # can never accidentally become part of the Docker image.
+      # Build before authentication so temporary Google credentials
+      # cannot accidentally become part of the Docker image.
       - name: Build Docker image
         run: docker build -t apple-music-pipeline .
 
