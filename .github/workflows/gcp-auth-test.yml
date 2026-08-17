@@ -1,0 +1,44 @@
+name: GCP Authentication Test
+
+on:
+  push:
+    branches:
+      - feature/daily-pipeline
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  test-gcp-auth:
+    name: Test GitHub to GCP authentication
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v3
+        with:
+          project_id: music-analytics-500503
+          workload_identity_provider: projects/909592598135/locations/global/workloadIdentityPools/github-actions-pool/providers/github-provider
+          service_account: github-actions-pipeline@music-analytics-500503.iam.gserviceaccount.com
+
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v3
+
+      - name: Show authenticated account
+        run: |
+          gcloud auth list
+          gcloud config get-value project
+
+      - name: Test BigQuery access
+        run: |
+          bq query \
+            --project_id=music-analytics-500503 \
+            --use_legacy_sql=false \
+            "SELECT 1 AS authentication_test"
